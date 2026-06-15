@@ -2,57 +2,57 @@ import { Component, inject } from '@angular/core';
 import { NgIf } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
-import { AuthService } from '../../services/auth.service';
-import { UserService } from '../../services/user.service';
+import { SessionManager } from '../../services/auth.service';
+import { PrincipalDataService } from '../../services/user.service';
 
 @Component({
   selector: 'app-login',
   templateUrl: 'login.component.html',
   imports: [FormsModule, NgIf],
 })
-export class LoginComponent {
-  private readonly authService = inject(AuthService);
-  private readonly userService = inject(UserService);
-  private readonly router = inject(Router);
+export class AuthenticationComponent {
+  private sessionMgr = inject(SessionManager);
+  private principalService = inject(PrincipalDataService);
+  private nav = inject(Router);
 
-  firstName = '';
-  lastName = '';
-  errorMessage = '';
-  loading = false;
+  fname = '';
+  lname = '';
+  msg = '';
+  busy = false;
 
   ngOnInit(): void {
-    if (this.authService.isLoggedIn()) {
-      this.router.navigate(['/app']);
+    if (this.sessionMgr.hasActiveSession()) {
+      this.nav.navigate(['/app']);
     }
   }
 
-  submitLogin(): void {
-    const normalizedFirstName = this.firstName.trim();
-    const normalizedLastName = this.lastName.trim();
+  performLogin(): void {
+    const trimmedFname = this.fname.trim();
+    const trimmedLname = this.lname.trim();
 
-    if (!normalizedFirstName || !normalizedLastName) {
-      this.errorMessage = 'Vypln meno aj priezvisko.';
+    if (!trimmedFname || !trimmedLname) {
+      this.msg = 'Please enter both first and last name.';
       return;
     }
 
-    this.loading = true;
-    this.errorMessage = '';
+    this.busy = true;
+    this.msg = '';
 
-    this.userService.findLoginMatch(normalizedFirstName, normalizedLastName).subscribe({
-      next: (user) => {
-        this.loading = false;
+    this.principalService.verifyCredentials(trimmedFname, trimmedLname).subscribe({
+      next: (actor) => {
+        this.busy = false;
 
-        if (!user) {
-          this.errorMessage = 'Pouzivatel sa nenasiel. Skontroluj meno a priezvisko.';
+        if (!actor) {
+          this.msg = 'Actor not found in system. Check credentials.';
           return;
         }
 
-        this.authService.login(user);
-        this.router.navigate(['/app']);
+        this.sessionMgr.initiateSession(actor);
+        this.nav.navigate(['/app']);
       },
       error: () => {
-        this.loading = false;
-        this.errorMessage = 'Nepodarilo sa nacitat zoznam pouzivatelov.';
+        this.busy = false;
+        this.msg = 'Failed to fetch actor database.';
       },
     });
   }

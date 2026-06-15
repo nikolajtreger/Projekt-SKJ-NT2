@@ -1,29 +1,29 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
-import { map, Observable } from 'rxjs';
-import { DummyUser, UsersResponse } from '../models/user.model';
+import { Observable, map } from 'rxjs';
+import { Actor, ActorsData } from '../models/user.model';
 
 @Injectable({ providedIn: 'root' })
-export class UserService {
-  private readonly http = inject(HttpClient);
+export class PrincipalDataService {
+  private http = inject(HttpClient);
 
-  getUsers(): Observable<DummyUser[]> {
+  listAllActors(): Observable<Actor[]> {
     return this.http
-      .get<UsersResponse>('https://dummyjson.com/users')
-      .pipe(map((response) => response.users));
+      .get<ActorsData>('https://dummyjson.com/users')
+      .pipe(map((res) => res.users));
   }
 
-  findLoginMatch(firstName: string, lastName: string): Observable<DummyUser | null> {
-    const normalizedFirstName = firstName.trim().toLowerCase();
-    const normalizedLastName = lastName.trim().toLowerCase();
+  verifyCredentials(fname: string, lname: string): Observable<Actor | null> {
+    const fnameLower = fname.trim().toLowerCase();
+    const lnameLower = lname.trim().toLowerCase();
 
-    return this.getUsers().pipe(
+    return this.listAllActors().pipe(
       map(
-        (users) =>
-          users.find(
-            (user) =>
-              user.firstName.toLowerCase() === normalizedFirstName &&
-              user.lastName.toLowerCase() === normalizedLastName
+        (items) =>
+          items.find(
+            (item) =>
+              item.first.toLowerCase() === fnameLower &&
+              item.last.toLowerCase() === lnameLower
           ) ?? null
       )
     );

@@ -1,45 +1,45 @@
-export interface Address {
+export interface Location {
   city: string;
-  postalCode: string;
+  zip: string;
 }
 
-export interface DummyUser {
+export interface Actor {
   id: number;
-  firstName: string;
-  lastName: string;
-  maidenName?: string;
+  first: string;
+  last: string;
+  maiden?: string;
   email: string;
   username: string;
-  birthDate: string;
-  image: string;
-  eyeColor: string;
-  university: string;
-  macAddress: string;
-  ip: string;
-  address: Address;
+  dob: string;
+  avatar: string;
+  eyeCol: string;
+  uni: string;
+  mac: string;
+  ipAddr: string;
+  location: Location;
 }
 
-export interface UsersResponse {
-  users: DummyUser[];
+export interface ActorsData {
+  users: Actor[];
 }
 
-export interface GenderizeResponse {
+export interface GenderAnalysis {
   name: string;
   gender: string | null;
-  probability: number;
-  count: number;
+  prob: number;
+  qty: number;
 }
 
-export interface ZippopotamPlace {
+export interface RegionData {
   state: string;
 }
 
-export interface ZippopotamResponse {
-  places: ZippopotamPlace[];
+export interface RegionResponse {
+  places: RegionData[];
 }
 
-export interface BrowsingHistoryEntry {
-  fullName: string;
-  startTime: Date;
-  endTime: Date;
+export interface SessionRecord {
+  actorName: string;
+  tIn: Date;
+  tOut: Date;
 }

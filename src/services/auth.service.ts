@@ -1,70 +1,63 @@
 import { Injectable } from '@angular/core';
 import { BehaviorSubject } from 'rxjs';
-import { DummyUser } from '../models/user.model';
+import { Actor } from '../models/user.model';
 
 @Injectable({ providedIn: 'root' })
-export class AuthService {
-  private currentUserSubject = new BehaviorSubject<DummyUser | null>(null);
-  private loginAtSubject = new BehaviorSubject<Date | null>(null);
-  private clickCountSubject = new BehaviorSubject<number>(0);
-  private filterTextSubject = new BehaviorSubject<string>('');
+export class SessionManager {
+  private activeActorSource = new BehaviorSubject<Actor | null>(null);
+  private sessionStartTimeSource = new BehaviorSubject<Date | null>(null);
+  private interactionCountSource = new BehaviorSubject<number>(0);
+  private searchQuerySource = new BehaviorSubject<string>('');
 
-  readonly currentUser$ = this.currentUserSubject.asObservable();
-  readonly loginAt$ = this.loginAtSubject.asObservable();
-  readonly clickCount$ = this.clickCountSubject.asObservable();
-  readonly filterText$ = this.filterTextSubject.asObservable();
+  activeActor$ = this.activeActorSource.asObservable();
+  sessionStartTime$ = this.sessionStartTimeSource.asObservable();
+  interactionCount$ = this.interactionCountSource.asObservable();
+  searchQuery$ = this.searchQuerySource.asObservable();
 
-  getCurrentUser(): DummyUser | null {
-    return this.currentUserSubject.value;
+  getActiveActor(): Actor | null {
+    return this.activeActorSource.value;
   }
 
-  isLoggedIn(): boolean {
-    return this.currentUserSubject.value !== null;
+  hasActiveSession(): boolean {
+    return this.activeActorSource.value !== null;
   }
 
-  login(user: DummyUser): void {
-    this.currentUserSubject.next(user);
-    this.loginAtSubject.next(new Date());
-    this.clickCountSubject.next(0);
-    this.filterTextSubject.next('');
+  initiateSession(actor: Actor): void {
+    this.activeActorSource.next(actor);
+    this.sessionStartTimeSource.next(new Date());
+    this.interactionCountSource.next(0);
+    this.searchQuerySource.next('');
   }
 
-  registerClick(): void {
-    if (!this.isLoggedIn()) {
-      return;
-    }
-
-    this.clickCountSubject.next(this.clickCountSubject.value + 1);
+  recordInteraction(): void {
+    if (!this.hasActiveSession()) return;
+    this.interactionCountSource.next(this.interactionCountSource.value + 1);
   }
 
-  setFilterText(value: string): void {
-    this.filterTextSubject.next(value);
+  updateSearchQuery(query: string): void {
+    this.searchQuerySource.next(query);
   }
 
-  logout(): string {
-    const loginAt = this.loginAtSubject.value;
-    const duration = loginAt
-      ? this.formatDuration(Date.now() - loginAt.getTime())
+  terminateSession(): string {
+    const startTime = this.sessionStartTimeSource.value;
+    const elapsed = startTime
+      ? this.calculateElapsedTime(Date.now() - startTime.getTime())
       : '00:00:00';
 
-    this.currentUserSubject.next(null);
-    this.loginAtSubject.next(null);
-    this.clickCountSubject.next(0);
-    this.filterTextSubject.next('');
+    this.activeActorSource.next(null);
+    this.sessionStartTimeSource.next(null);
+    this.interactionCountSource.next(0);
+    this.searchQuerySource.next('');
 
-    return duration;
+    return elapsed;
   }
 
-  private formatDuration(milliseconds: number): string {
-    const totalSeconds = Math.ceil(milliseconds / 1000);
-    const hours = Math.floor(totalSeconds / 3600);
-    const minutes = Math.floor((totalSeconds % 3600) / 60);
-    const seconds = totalSeconds % 60;
+  private calculateElapsedTime(ms: number): string {
+    const sec = Math.ceil(ms / 1000);
+    const hrs = Math.floor(sec / 3600);
+    const mins = Math.floor((sec % 3600) / 60);
+    const secs = sec % 60;
 
-    return `${this.pad(hours)}:${this.pad(minutes)}:${this.pad(seconds)}`;
-  }
-
-  private pad(value: number): string {
-    return value.toString().padStart(2, '0');
+    return `${String(hrs).padStart(2, '0')}:${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
   }
 }

@@ -5,85 +5,85 @@ import { TopBarComponent } from '../top-bar/top-bar.component';
 import { UserListComponent } from '../user-list/user-list.component';
 import { UserDetailComponent } from '../user-detail/user-detail.component';
 import { HistoryPanelComponent } from '../history/history.component';
-import { AuthService } from '../../services/auth.service';
+import { SessionManager } from '../../services/auth.service';
 import { BrowsingHistoryService } from '../../services/browsing-history.service';
-import { DummyUser } from '../../models/user.model';
+import { Actor } from '../../models/user.model';
 
 @Component({
   selector: 'app-dashboard',
   templateUrl: 'dashboard.component.html',
   imports: [TopBarComponent, UserListComponent, UserDetailComponent, HistoryPanelComponent],
 })
-export class DashboardComponent implements OnInit, OnDestroy {
-  private readonly authService = inject(AuthService);
-  private readonly browsingHistoryService = inject(BrowsingHistoryService);
-  private readonly router = inject(Router);
-  private subscriptions: Subscription[] = [];
+export class MainViewComponent implements OnInit, OnDestroy {
+  private sessionMgr = inject(SessionManager);
+  private histSvc = inject(BrowsingHistoryService);
+  private router = inject(Router);
+  private subs: Subscription[] = [];
 
-  currentUser: DummyUser | null = null;
-  loginAt: Date | null = null;
-  clickCount = 0;
-  filterText = '';
-  selectedUser: DummyUser | null = null;
+  currentActor: Actor | null = null;
+  sessionStart: Date | null = null;
+  clicks = 0;
+  query = '';
+  openedActor: Actor | null = null;
 
   ngOnInit(): void {
-    this.subscriptions.push(
-      this.authService.currentUser$.subscribe((user) => {
-        this.currentUser = user;
+    this.subs.push(
+      this.sessionMgr.activeActor$.subscribe((act) => {
+        this.currentActor = act;
       })
     );
 
-    this.subscriptions.push(
-      this.authService.loginAt$.subscribe((value) => {
-        this.loginAt = value;
+    this.subs.push(
+      this.sessionMgr.sessionStartTime$.subscribe((ts) => {
+        this.sessionStart = ts;
       })
     );
 
-    this.subscriptions.push(
-      this.authService.clickCount$.subscribe((value) => {
-        this.clickCount = value;
+    this.subs.push(
+      this.sessionMgr.interactionCount$.subscribe((cnt) => {
+        this.clicks = cnt;
       })
     );
 
-    this.subscriptions.push(
-      this.authService.filterText$.subscribe((value) => {
-        this.filterText = value;
+    this.subs.push(
+      this.sessionMgr.searchQuery$.subscribe((q) => {
+        this.query = q;
       })
     );
 
-    this.subscriptions.push(
-      this.browsingHistoryService.selectedUser$.subscribe((user) => {
-        this.selectedUser = user;
+    this.subs.push(
+      this.histSvc.selectedActor$.subscribe((act) => {
+        this.openedActor = act;
       })
     );
   }
 
   ngOnDestroy(): void {
-    this.subscriptions.forEach((subscription) => subscription.unsubscribe());
+    this.subs.forEach((s) => s.unsubscribe());
   }
 
-  onAnyAppClick(): void {
-    this.authService.registerClick();
+  onPageInteraction(): void {
+    this.sessionMgr.recordInteraction();
   }
 
-  onFilterChange(value: string): void {
-    this.authService.setFilterText(value);
+  onQueryChange(q: string): void {
+    this.sessionMgr.updateSearchQuery(q);
   }
 
-  onShowDetail(user: DummyUser): void {
-    this.browsingHistoryService.openDetail(user);
+  onActorSelected(act: Actor): void {
+    this.histSvc.openDetail(act);
   }
 
-  onCloseDetail(): void {
-    this.browsingHistoryService.closeDetail();
+  onActorDeselected(): void {
+    this.histSvc.closeDetail();
   }
 
-  logout(): void {
-    this.browsingHistoryService.closeDetail();
-    const duration = this.authService.logout();
-    this.browsingHistoryService.reset();
+  onLogout(): void {
+    this.histSvc.closeDetail();
+    const duration = this.sessionMgr.terminateSession();
+    this.histSvc.reset();
 
-    window.alert(`Dlzka prihlasenia: ${duration}`);
+    window.alert(`Session duration: ${duration}`);
     this.router.navigate(['/login']);
   }
 }

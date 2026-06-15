@@ -1,32 +1,32 @@
-<section class="login-page">
-  <div class="login-card">
-    <h1>Prihlasenie</h1>
-    <p>Zadaj meno a priezvisko pouzivatela z API.</p>
+<section class="auth-container">
+  <div class="auth-box">
+    <h1>System Access</h1>
+    <p>Enter actor credentials from the database.</p>
 
-    <form (ngSubmit)="submitLogin()">
-      <label for="first-name">Meno</label>
+    <form (ngSubmit)="performLogin()">
+      <label for="fname-input">First Name</label>
       <input
-        id="first-name"
+        id="fname-input"
         type="text"
-        name="firstName"
-        [(ngModel)]="firstName"
-        [disabled]="loading"
+        name="fname"
+        [(ngModel)]="fname"
+        [disabled]="busy"
       />
 
-      <label for="last-name">Priezvisko</label>
+      <label for="lname-input">Last Name</label>
       <input
-        id="last-name"
+        id="lname-input"
         type="text"
-        name="lastName"
-        [(ngModel)]="lastName"
-        [disabled]="loading"
+        name="lname"
+        [(ngModel)]="lname"
+        [disabled]="busy"
       />
 
-      <button type="submit" [disabled]="loading">
-        {{ loading ? 'Prihlasujem...' : 'Prihlasit' }}
+      <button type="submit" [disabled]="busy">
+        {{ busy ? 'Processing...' : 'Access System' }}
       </button>
     </form>
 
-    <p class="error" *ngIf="errorMessage">{{ errorMessage }}</p>
+    <p class="notification" *ngIf="msg">{{ msg }}</p>
   </div>
 </section>
