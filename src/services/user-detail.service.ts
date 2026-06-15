@@ -2,42 +2,42 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
 import { catchError, forkJoin, map, Observable, of } from 'rxjs';
 import {
-  DummyUser,
-  GenderizeResponse,
-  ZippopotamResponse,
+  Actor,
+  GenderAnalysis,
+  RegionResponse,
 } from '../models/user.model';
 
-export interface EnrichedUserData {
-  testGender: string;
-  homeState: string;
+export interface DetailedProfile {
+  detectedGender: string;
+  residenceState: string;
 }
 
 @Injectable({ providedIn: 'root' })
 export class UserDetailService {
-  private readonly http = inject(HttpClient);
+  private http = inject(HttpClient);
 
-  getEnrichedUserData(user: DummyUser): Observable<EnrichedUserData> {
+  getDetailedProfile(actor: Actor): Observable<DetailedProfile> {
     const gender$ = this.http
-      .get<GenderizeResponse>(
-        `https://api.genderize.io?name=${encodeURIComponent(user.firstName)}`
+      .get<GenderAnalysis>(
+        `https://api.genderize.io?name=${encodeURIComponent(actor.first)}`
       )
       .pipe(
-        map((response) => response.gender ?? 'Nedostupne'),
-        catchError(() => of('Nedostupne'))
+        map((res) => res.gender ?? 'N/A'),
+        catchError(() => of('N/A'))
       );
 
-    const homeState$ = this.http
-      .get<ZippopotamResponse>(
-        `https://api.zippopotam.us/us/${encodeURIComponent(user.address.postalCode)}`
+    const state$ = this.http
+      .get<RegionResponse>(
+        `https://api.zippopotam.us/us/${encodeURIComponent(actor.location.zip)}`
       )
       .pipe(
-        map((response) => response.places?.[0]?.state ?? 'Nedostupne'),
-        catchError(() => of('Nedostupne'))
+        map((res) => res.places?.[0]?.state ?? 'N/A'),
+        catchError(() => of('N/A'))
       );
 
     return forkJoin({
-      testGender: gender$,
-      homeState: homeState$,
+      detectedGender: gender$,
+      residenceState: state$,
     });
   }
 }

@@ -1,20 +1,20 @@
-<header class="top-bar">
-  <div class="top-bar-user" *ngIf="currentUser">
-    <strong>{{ currentUser.firstName }} {{ currentUser.lastName }}</strong>
-    <span>Prihlaseny: {{ loginAt | date : 'dd.MM.yyyy HH:mm:ss' }}</span>
-    <span>Pocet klikov: {{ clickCount }}</span>
+<header class="header-bar">
+  <div class="header-info" *ngIf="currentActor">
+    <strong>{{ currentActor.first }} {{ currentActor.last }}</strong>
+    <span>Session: {{ sessionStart | date : 'dd.MM.yyyy HH:mm:ss' }}</span>
+    <span>Interactions: {{ clicks }}</span>
   </div>
 
-  <div class="top-bar-actions">
-    <label for="lastname-filter">Filter priezviska</label>
+  <div class="header-controls">
+    <label for="search-input">Search by last name</label>
     <input
-      id="lastname-filter"
+      id="search-input"
       type="text"
-      [ngModel]="filterText"
-      (ngModelChange)="onFilterInput($event)"
-      placeholder="Napr. Smith"
+      [ngModel]="query"
+      (ngModelChange)="onSearchInput($event)"
+      placeholder="e.g. Smith"
     />
 
-    <button type="button" (click)="logout()">Logout</button>
+    <button type="button" (click)="handleLogout()">Sign Out</button>
   </div>
 </header>

@@ -1,15 +1,15 @@
-<aside class="panel panel-right">
-  <h2>Pravy Panel</h2>
+<aside class="section">
+  <h2>Session History</h2>
 
   <div class="history-list">
-    <article class="history-card" *ngFor="let item of history">
-      <p><strong>{{ item.fullName }}</strong></p>
-      <p>Zaciatok: {{ item.startTime | date : 'HH:mm:ss' }}</p>
-      <p>Koniec: {{ item.endTime | date : 'HH:mm:ss' }}</p>
+    <article class="history-entry" *ngFor="let rec of records">
+      <p><strong>{{ rec.actorName }}</strong></p>
+      <p>Started: {{ rec.tIn | date : 'HH:mm:ss' }}</p>
+      <p>Ended: {{ rec.tOut | date : 'HH:mm:ss' }}</p>
     </article>
 
-    <p *ngIf="history.length === 0" class="empty-state">
-      Historia prehliadania je prazdna.
+    <p *ngIf="records.length === 0" class="placeholder">
+      No session history yet.
     </p>
   </div>
 </aside>

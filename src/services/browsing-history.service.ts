@@ -1,48 +1,48 @@
 import { Injectable } from '@angular/core';
 import { BehaviorSubject } from 'rxjs';
-import { BrowsingHistoryEntry, DummyUser } from '../models/user.model';
+import { SessionRecord, Actor } from '../models/user.model';
 
 @Injectable({ providedIn: 'root' })
 export class BrowsingHistoryService {
-  private selectedUserSubject = new BehaviorSubject<DummyUser | null>(null);
-  private historySubject = new BehaviorSubject<BrowsingHistoryEntry[]>([]);
+  private selectedActorSubject = new BehaviorSubject<Actor | null>(null);
+  private recordsSubject = new BehaviorSubject<SessionRecord[]>([]);
 
-  private activeDetailStart: Date | null = null;
+  private activeSessionStart: Date | null = null;
 
-  readonly selectedUser$ = this.selectedUserSubject.asObservable();
-  readonly history$ = this.historySubject.asObservable();
+  selectedActor$ = this.selectedActorSubject.asObservable();
+  records$ = this.recordsSubject.asObservable();
 
-  openDetail(user: DummyUser): void {
-    this.closeActiveDetail(new Date());
-    this.selectedUserSubject.next(user);
-    this.activeDetailStart = new Date();
+  openDetail(actor: Actor): void {
+    this.finishActiveSession(new Date());
+    this.selectedActorSubject.next(actor);
+    this.activeSessionStart = new Date();
   }
 
   closeDetail(): void {
-    this.closeActiveDetail(new Date());
-    this.selectedUserSubject.next(null);
-    this.activeDetailStart = null;
+    this.finishActiveSession(new Date());
+    this.selectedActorSubject.next(null);
+    this.activeSessionStart = null;
   }
 
   reset(): void {
-    this.selectedUserSubject.next(null);
-    this.historySubject.next([]);
-    this.activeDetailStart = null;
+    this.selectedActorSubject.next(null);
+    this.recordsSubject.next([]);
+    this.activeSessionStart = null;
   }
 
-  private closeActiveDetail(endTime: Date): void {
-    const activeUser = this.selectedUserSubject.value;
+  private finishActiveSession(endTime: Date): void {
+    const activeActor = this.selectedActorSubject.value;
 
-    if (!activeUser || !this.activeDetailStart) {
+    if (!activeActor || !this.activeSessionStart) {
       return;
     }
 
-    const entry: BrowsingHistoryEntry = {
-      fullName: `${activeUser.firstName} ${activeUser.lastName}`,
-      startTime: this.activeDetailStart,
-      endTime,
+    const record: SessionRecord = {
+      actorName: `${activeActor.first} ${activeActor.last}`,
+      tIn: this.activeSessionStart,
+      tOut: endTime,
     };
 
-    this.historySubject.next([...this.historySubject.value, entry]);
+    this.recordsSubject.next([...this.recordsSubject.value, record]);
   }
 }

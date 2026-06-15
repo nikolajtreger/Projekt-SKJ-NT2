@@ -1,23 +1,23 @@
-<aside class="panel panel-left">
-  <h2>Lavy Bocny Panel</h2>
+<aside class="section">
+  <h2>Actor Registry</h2>
 
-  <div class="panel-list">
+  <div class="section-list">
     <article
-      class="user-card"
-      *ngFor="let user of filteredUsers"
-      (click)="toggleUserCard(user.id)"
+      class="actor-card"
+      *ngFor="let act of displayed"
+      (click)="toggleActor(act.id)"
     >
-      <p><strong>{{ user.firstName }} {{ user.lastName }}</strong></p>
-      <p>{{ user.email }}</p>
+      <p><strong>{{ act.first }} {{ act.last }}</strong></p>
+      <p>{{ act.email }}</p>
 
-      <div class="user-card-actions" *ngIf="expandedUserId === user.id">
-        <button type="button" (click)="onShowDetail(user)">Zobraz detail</button>
-        <button type="button" (click)="clearSelection()">Zrusit vyber</button>
+      <div class="actor-actions" *ngIf="activeId === act.id">
+        <button type="button" (click)="selectActor(act)">View Profile</button>
+        <button type="button" (click)="clearActor()">Close</button>
       </div>
     </article>
 
-    <p *ngIf="filteredUsers.length === 0" class="empty-state">
-      Ziadny pouzivatel nevyhovuje filtru.
+    <p *ngIf="displayed.length === 0" class="placeholder">
+      No actors match filter.
     </p>
   </div>
 </aside>

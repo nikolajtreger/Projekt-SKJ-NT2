@@ -1,7 +1,7 @@
 import { Component, OnDestroy, OnInit, inject } from '@angular/core';
 import { DatePipe, NgFor, NgIf } from '@angular/common';
 import { Subscription } from 'rxjs';
-import { BrowsingHistoryEntry } from '../../models/user.model';
+import { SessionRecord } from '../../models/user.model';
 import { BrowsingHistoryService } from '../../services/browsing-history.service';
 
 @Component({
@@ -10,18 +10,18 @@ import { BrowsingHistoryService } from '../../services/browsing-history.service'
   imports: [DatePipe, NgFor, NgIf],
 })
 export class HistoryPanelComponent implements OnInit, OnDestroy {
-  private readonly browsingHistoryService = inject(BrowsingHistoryService);
-  private historySubscription?: Subscription;
+  private historySvc = inject(BrowsingHistoryService);
+  private historySub?: Subscription;
 
-  history: BrowsingHistoryEntry[] = [];
+  records: SessionRecord[] = [];
 
   ngOnInit(): void {
-    this.historySubscription = this.browsingHistoryService.history$.subscribe((value) => {
-      this.history = value;
+    this.historySub = this.historySvc.records$.subscribe((val) => {
+      this.records = val;
     });
   }
 
   ngOnDestroy(): void {
-    this.historySubscription?.unsubscribe();
+    this.historySub?.unsubscribe();
   }
 }
