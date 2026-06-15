@@ -1,9 +1,9 @@
 import { Component, EventEmitter, Input, OnDestroy, Output, inject } from '@angular/core';
 import { NgIf } from '@angular/common';
 import { Subscription } from 'rxjs';
-import { DummyUser } from '../../models/user.model';
+import { Actor } from '../../models/user.model';
 import {
-  EnrichedUserData,
+  DetailedProfile,
   UserDetailService,
 } from '../../services/user-detail.service';
 
@@ -12,53 +12,53 @@ import {
   templateUrl: 'user-detail.component.html',
   imports: [NgIf],
 })
-export class UserDetailComponent implements OnDestroy {
-  private readonly userDetailService = inject(UserDetailService);
-  private detailSubscription?: Subscription;
+export class ProfileViewComponent implements OnDestroy {
+  private profileSvc = inject(UserDetailService);
+  private detailSub?: Subscription;
 
-  @Output() closeDetail = new EventEmitter<void>();
+  @Output() deselected = new EventEmitter<void>();
 
-  @Input() set selectedUser(value: DummyUser | null) {
-    this.user = value;
-    this.enrichedData = null;
+  @Input() set selectedActor(value: Actor | null) {
+    this.actor = value;
+    this.profile = null;
 
     if (!value) {
-      this.loading = false;
+      this.isLoading = false;
       return;
     }
 
-    this.loading = true;
-    this.loadEnrichedData(value);
+    this.isLoading = true;
+    this.loadProfile(value);
   }
 
-  user: DummyUser | null = null;
-  loading = false;
-  enrichedData: EnrichedUserData | null = null;
+  actor: Actor | null = null;
+  isLoading = false;
+  profile: DetailedProfile | null = null;
 
-  close(): void {
-    this.closeDetail.emit();
+  dismiss(): void {
+    this.deselected.emit();
   }
 
   ngOnDestroy(): void {
-    this.detailSubscription?.unsubscribe();
+    this.detailSub?.unsubscribe();
   }
 
-  private loadEnrichedData(user: DummyUser): void {
-    this.detailSubscription?.unsubscribe();
+  private loadProfile(actor: Actor): void {
+    this.detailSub?.unsubscribe();
 
-    this.detailSubscription = this.userDetailService
-      .getEnrichedUserData(user)
+    this.detailSub = this.profileSvc
+      .getDetailedProfile(actor)
       .subscribe({
         next: (data) => {
-          this.enrichedData = data;
-          this.loading = false;
+          this.profile = data;
+          this.isLoading = false;
         },
         error: () => {
-          this.enrichedData = {
-            testGender: 'Nedostupne',
-            homeState: 'Nedostupne',
+          this.profile = {
+            detectedGender: 'N/A',
+            residenceState: 'N/A',
           };
-          this.loading = false;
+          this.isLoading = false;
         },
       });
   }
