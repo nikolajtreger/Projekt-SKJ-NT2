@@ -1,0 +1,15 @@
+<aside class="panel panel-right">
+  <h2>Pravy Panel</h2>
+
+  <div class="history-list">
+    <article class="history-card" *ngFor="let item of history">
+      <p><strong>{{ item.fullName }}</strong></p>
+      <p>Zaciatok: {{ item.startTime | date : 'HH:mm:ss' }}</p>
+      <p>Koniec: {{ item.endTime | date : 'HH:mm:ss' }}</p>
+    </article>
+
+    <p *ngIf="history.length === 0" class="empty-state">
+      Historia prehliadania je prazdna.
+    </p>
+  </div>
+</aside>

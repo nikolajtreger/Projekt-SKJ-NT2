@@ -1,0 +1,32 @@
+<section class="login-page">
+  <div class="login-card">
+    <h1>Prihlasenie</h1>
+    <p>Zadaj meno a priezvisko pouzivatela z API.</p>
+
+    <form (ngSubmit)="submitLogin()">
+      <label for="first-name">Meno</label>
+      <input
+        id="first-name"
+        type="text"
+        name="firstName"
+        [(ngModel)]="firstName"
+        [disabled]="loading"
+      />
+
+      <label for="last-name">Priezvisko</label>
+      <input
+        id="last-name"
+        type="text"
+        name="lastName"
+        [(ngModel)]="lastName"
+        [disabled]="loading"
+      />
+
+      <button type="submit" [disabled]="loading">
+        {{ loading ? 'Prihlasujem...' : 'Prihlasit' }}
+      </button>
+    </form>
+
+    <p class="error" *ngIf="errorMessage">{{ errorMessage }}</p>
+  </div>
+</section>

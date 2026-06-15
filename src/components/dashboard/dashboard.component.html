@@ -1,0 +1,21 @@
+<section class="app-page" (click)="onAnyAppClick()">
+  <app-top-bar
+    [currentUser]="currentUser"
+    [loginAt]="loginAt"
+    [clickCount]="clickCount"
+    [filterText]="filterText"
+    (filterTextChange)="onFilterChange($event)"
+    (logoutClicked)="logout()"
+  ></app-top-bar>
+
+  <div class="app-columns">
+    <app-user-list (showDetail)="onShowDetail($event)"></app-user-list>
+
+    <app-user-detail
+      [selectedUser]="selectedUser"
+      (closeDetail)="onCloseDetail()"
+    ></app-user-detail>
+
+    <app-history-panel></app-history-panel>
+  </div>
+</section>

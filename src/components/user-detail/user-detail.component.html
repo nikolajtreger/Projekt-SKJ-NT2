@@ -1,0 +1,31 @@
+<main class="panel panel-center">
+  <h2>Stredny Panel</h2>
+
+  <div *ngIf="!user" class="empty-state">
+    Vyber pouzivatela z laveho panelu.
+  </div>
+
+  <div *ngIf="user" class="user-detail-card">
+    <button type="button" class="close-detail" (click)="close()">
+      Zavriet detail
+    </button>
+
+    <img [src]="user.image" [alt]="user.firstName + ' ' + user.lastName" />
+
+    <p><strong>Meno:</strong> {{ user.firstName }} {{ user.lastName }}</p>
+    <p><strong>Username:</strong> {{ user.username }}</p>
+    <p><strong>Datum narodenia:</strong> {{ user.birthDate }}</p>
+    <p><strong>Eye color:</strong> {{ user.eyeColor }}</p>
+    <p><strong>Univerzita:</strong> {{ user.university }}</p>
+    <p><strong>MAC:</strong> {{ user.macAddress }}</p>
+    <p><strong>IP:</strong> {{ user.ip }}</p>
+    <p><strong>Mesto:</strong> {{ user.address.city }}</p>
+
+    <p *ngIf="loading">Nacitavam doplnkove udaje...</p>
+
+    <ng-container *ngIf="!loading && enrichedData">
+      <p><strong>Testovacie pohlavie:</strong> {{ enrichedData.testGender }}</p>
+      <p><strong>Domovsky stat:</strong> {{ enrichedData.homeState }}</p>
+    </ng-container>
+  </div>
+</main>

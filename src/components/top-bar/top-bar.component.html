@@ -1,0 +1,20 @@
+<header class="top-bar">
+  <div class="top-bar-user" *ngIf="currentUser">
+    <strong>{{ currentUser.firstName }} {{ currentUser.lastName }}</strong>
+    <span>Prihlaseny: {{ loginAt | date : 'dd.MM.yyyy HH:mm:ss' }}</span>
+    <span>Pocet klikov: {{ clickCount }}</span>
+  </div>
+
+  <div class="top-bar-actions">
+    <label for="lastname-filter">Filter priezviska</label>
+    <input
+      id="lastname-filter"
+      type="text"
+      [ngModel]="filterText"
+      (ngModelChange)="onFilterInput($event)"
+      placeholder="Napr. Smith"
+    />
+
+    <button type="button" (click)="logout()">Logout</button>
+  </div>
+</header>

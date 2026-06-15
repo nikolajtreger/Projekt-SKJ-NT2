@@ -1,0 +1,23 @@
+<aside class="panel panel-left">
+  <h2>Lavy Bocny Panel</h2>
+
+  <div class="panel-list">
+    <article
+      class="user-card"
+      *ngFor="let user of filteredUsers"
+      (click)="toggleUserCard(user.id)"
+    >
+      <p><strong>{{ user.firstName }} {{ user.lastName }}</strong></p>
+      <p>{{ user.email }}</p>
+
+      <div class="user-card-actions" *ngIf="expandedUserId === user.id">
+        <button type="button" (click)="onShowDetail(user)">Zobraz detail</button>
+        <button type="button" (click)="clearSelection()">Zrusit vyber</button>
+      </div>
+    </article>
+
+    <p *ngIf="filteredUsers.length === 0" class="empty-state">
+      Ziadny pouzivatel nevyhovuje filtru.
+    </p>
+  </div>
+</aside>
